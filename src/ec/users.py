@@ -1,6 +1,10 @@
 from ec.db import get_conn
 from ec import fb
 
+def dbget_all_users():
+    db = get_conn()
+    return db.query("SELECT * FROM users")
+
 def dbget_user(uid):
     db = get_conn()
     return db.get("SELECT * FROM users WHERE id=%s", uid)

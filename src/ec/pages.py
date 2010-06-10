@@ -1,7 +1,6 @@
 import urlparse
 from tornado import database, web, auth, httpclient, escape
 from tornado.options import define, options
-from tornado.options import define, options
 
 from ec.db import get_conn
 import ec.users
@@ -17,6 +16,7 @@ class BasePage(web.RequestHandler):
             return ec.users.get_user(int(uid))
 
     def render(self, *args, **kwargs):
+        kwargs.setdefault("OPTIONS", options)
         super(BasePage, self).render(*args, **kwargs)
         if options.debug_templates:
             del web.RequestHandler._templates
@@ -44,12 +44,12 @@ class HomePage(BasePage):
     @web.authenticated
     @web.asynchronous
     def get(self):
-        fb.get_user(self.current_user.fb_access_token,
-                    self.json_callback(self._on_get_user))
+        fb.get_user(self.current_user.fbid,
+                    self.current_user,
+                    self.async_callback(self._on_get_user))
 
-    def _on_get_user(self, json):
-        self.render("templates/home-page.html", name=json['name'])
-        self.finish()
+    def _on_get_user(self, user):
+        self.render("templates/home-page.html", name=user['name'])
 
 
 class LoginPage(BasePage):
@@ -77,22 +77,18 @@ class LoginPage(BasePage):
             self.fail_auth(response.body)
         else:
             self.access_token = urlparse.parse_qs(response.body)['access_token'][0]
-            fb.get_user(self.access_token, self.async_callback(self._on_user_recieved))
+            fb.fbget_self(self.access_token, self.async_callback(self._on_user_recieved))
 
-    def _on_user_recieved(self, response):
-        if response.error:
-            self.fail_auth(response.body)
+    def _on_user_recieved(self, json):
+        fbid = json['id']
+        user = ec.users.get_user_by_fbid(fbid)
+        if user:
+            uid = user.id
+            ec.users.set_fb_access_token(uid, self.access_token)
         else:
-            json = escape.json_decode(response.body)
-            fbid = json['id']
-            user = ec.users.get_user_by_fbid(fbid)
-            if user:
-                uid = user.id
-                ec.users.set_fb_access_token(uid, self.access_token)
-            else:
-                uid = ec.users.create_user(fbid, self.access_token)
-            self.set_secure_cookie("user", str(uid))
-            return self.redirect("/")
+            uid = ec.users.create_user(fbid, self.access_token)
+        self.set_secure_cookie("user", str(uid))
+        return self.redirect("/")
 
 
 class LogoutPage(BasePage):
