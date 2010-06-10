@@ -25,8 +25,8 @@ application = tornado.web.Application([
     (r'/home', ec.pages.HomePage),
 ], **settings)
 
-define("debug_templates", default=False)
-define("server_port", default=8888)
+define("debug_templates", default=False, type=bool)
+define("server_port", default=8888, type=int)
 
 from tornado import template
 
