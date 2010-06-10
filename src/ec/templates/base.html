@@ -1,10 +1,25 @@
 <html>
   <head>
     <title>{% block title %}Exercise Challenge{% end %}</title>
+    <link rel="stylesheet" type="text/css"
+          href="http://yui.yahooapis.com/combo?2.6.0/build/reset-fonts/reset-fonts.css"
+          />
+    <link rel="stylesheet" type="text/css"
+          href="{{ static_url('css/style.css') }}" />
   </head>
   <body>
-    {% block body %}
-    Welcome to the exercise Challenege.
-    {% end %}
+    <div id="body">
+      <div id="header">
+        <h1>Exercise Challenge</h1>
+      </div>
+      <div id="content">
+        {% block body %}
+        Welcome to the exercise Challenge.
+        {% end %}
+      </div>
+      <div id="footer">
+        &copy; 2010 Paul Carduner and Friends
+      <div>
+    </div>
   </body>
 </html>

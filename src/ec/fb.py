@@ -17,9 +17,10 @@ def get_url(path, args=None, secure=False):
     return endpoint+path+'?'+urllib.urlencode(args)
 
 
-def get_authorization_url(redirect_url):
+def get_authorization_url(redirect_url, scope=[]):
     return get_url('/oauth/authorize',
                    args={'client_id':options.fb_app_id,
+                         'scope':','.join(scope),
                          'redirect_uri':redirect_url},
                    secure=True)
 

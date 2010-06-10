@@ -1,4 +1,14 @@
-import tornado.database
+from tornado import database
+from tornado.options import define, options
+
+define("mysql_host", default="localhost")
+define("mysql_db", default="exercise")
+define("mysql_user", default="root")
+define("mysql_passwd", default="")
 
 def get_conn():
-    return tornado.database.Connection("localhost", "exercise", user="root")
+    return database.Connection(
+        options.mysql_host,
+        options.mysql_db,
+        user=options.mysql_user,
+        password=options.mysql_passwd)
