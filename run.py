@@ -6,6 +6,7 @@ from tornado.options import define, options
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
+import tornado.options
 
 import ec.pages
 
@@ -24,8 +25,8 @@ application = tornado.web.Application([
     (r'/home', ec.pages.HomePage),
 ], **settings)
 
-define("debug_templates", default="true")
-
+define("debug_templates", default=False)
+define("server_port", default=8888)
 
 from tornado import template
 
@@ -48,7 +49,12 @@ def debug_templates():
     template.Loader = DebugLoader
 
 if __name__ == "__main__":
-    if options.debug_templates == "true":
+    if len(sys.argv) < 2:
+        conf_file = os.path.join(os.path.dirname(__file__), "conf/dev.conf")
+    else:
+        conf_file = sys.argv[-1]
+    tornado.options.parse_config_file(conf_file)
+    if options.debug_templates:
         debug_templates()
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8888)
