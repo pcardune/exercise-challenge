@@ -57,5 +57,5 @@ if __name__ == "__main__":
     if options.debug_templates:
         debug_templates()
     http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(8888)
+    http_server.listen(options.server_port)
     tornado.ioloop.IOLoop.instance().start()
