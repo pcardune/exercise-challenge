@@ -50,9 +50,10 @@ def get_user(fbid, viewer, callback):
     if user:
         callback(user)
     else:
-        def wrapper(user):
-            cache.set(get_user_cachekey(fbid, viewer), user)
-            callback(user)
+        def wrapper(user, error=None):
+            if not error:
+                cache.set(get_user_cachekey(fbid, viewer), user)
+            callback(user, error=error)
         fbget_user(fbid, viewer, wrapper)
 
 def fbget_user(fbid, viewer, callback):
@@ -68,7 +69,7 @@ def fbget_user(fbid, viewer, callback):
         if not response.error:
             callback(escape.json_decode(response.body))
         else:
-            callback(None)
+            callback(None, error=response.body)
     httpclient.AsyncHTTPClient().fetch(url, callback=wrapper)
 
 def fbget_self(access_token, callback):
@@ -80,5 +81,5 @@ def fbget_self(access_token, callback):
         if not response.error:
             callback(escape.json_decode(response.body))
         else:
-            callback(None)
+            callback(None, error=response.body)
     httpclient.AsyncHTTPClient().fetch(url, callback=wrapper)

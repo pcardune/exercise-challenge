@@ -7,7 +7,6 @@ import ec.users
 from ec import fb
 
 
-
 class BasePage(web.RequestHandler):
 
     def get_current_user(self):
@@ -48,8 +47,11 @@ class HomePage(BasePage):
                     self.current_user,
                     self.async_callback(self._on_get_user))
 
-    def _on_get_user(self, user):
-        self.render("templates/home-page.html", name=user['name'])
+    def _on_get_user(self, user, error=None):
+        if error:
+            self.render("templates/error-page.html", error=error)
+        else:
+            self.render("templates/home-page.html", name=user['name'])
 
 
 class LoginPage(BasePage):
@@ -79,19 +81,24 @@ class LoginPage(BasePage):
             self.access_token = urlparse.parse_qs(response.body)['access_token'][0]
             fb.fbget_self(self.access_token, self.async_callback(self._on_user_recieved))
 
-    def _on_user_recieved(self, json):
-        fbid = json['id']
-        user = ec.users.get_user_by_fbid(fbid)
-        if user:
-            uid = user.id
-            ec.users.set_fb_access_token(uid, self.access_token)
+    def _on_user_recieved(self, json, error=None):
+        if error:
+            self.write(error)
+            self.finish()
         else:
-            uid = ec.users.create_user(fbid, self.access_token)
-        self.set_secure_cookie("user", str(uid))
-        return self.redirect("/")
+            fbid = json['id']
+            user = ec.users.get_user_by_fbid(fbid)
+            if user:
+                uid = user.id
+                ec.users.set_fb_access_token(uid, self.access_token)
+            else:
+                uid = ec.users.create_user(fbid, self.access_token)
+            self.set_secure_cookie("user", str(uid))
+            return self.redirect("/")
 
 
 class LogoutPage(BasePage):
+
     def get(self):
         ec.users.clear_fb_access_token(self.current_user.id)
         self.clear_all_cookies()
