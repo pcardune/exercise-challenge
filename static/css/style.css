@@ -1,22 +1,29 @@
 html {
-    background: #eeffee;
+}
+
+
+a,
+a:visited {
+    color: blue;
+    font-weight: bold;
 }
 
 #body {
     width: 900px;
     margin: auto;
-    background: #449944;
 }
 
 #header h1 {
     text-align: center;
     font-size: 200%;
-    color: white;
     padding: 20px;
 }
 
+#nav {
+    text-align: center;
+}
+
 #content {
-    border: 1px solid #449944;
     padding: 20px;
     min-height: 300px;
     background: white;
@@ -26,4 +33,73 @@ html {
     text-align: center;
     color: white;
     padding: 10px;
+}
+
+div.box {
+    position: relative;
+    top: -1px;
+}
+span.box-legend {
+    display: inline-block;
+    background: #ddd;
+    padding: 5px;
+    font-weight: bold;
+    border: 1px solid #aaa;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    top: 1px;
+}
+div.box-inner {
+    border: 1px solid #aaa;
+}
+div.box-content {
+    border: 5px solid #ddd;
+    padding: 5px;
+}
+div.box.medium {
+    width: 500px;
+    margin: auto;
+}
+
+
+div.left-right div.left,
+div.left-right div.right {
+    float: left;
+    display: inline;
+}
+div.left-right div.right {
+    margin-left: 5px;
+}
+div.left-right div.clear {
+    clear: both;
+}
+
+form.status-form label {
+    display: block;
+}
+
+form.status-form input {
+    width: 350px;
+    border: 1px solid #aaa;
+    padding: 2px;
+    font-weight: bold;
+    margin-top: 13px;
+}
+
+form.create-exercise-type div label {
+    width: 100px;
+    display: inline-block;
+}
+form.create-exercise-type div input {
+    width: 370px;
+}
+form.create-exercise-type div.actions {
+    text-align: right;
+    border-top: 1px solid #ddd;
+    margin-top: 10px;
+    padding: 5px 5px 0;
+}
+
+div.exercise-types div.box {
+    margin-top: 10px;
 }

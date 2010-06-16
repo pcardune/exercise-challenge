@@ -5,6 +5,7 @@ from tornado.options import define, options
 from ec.db import get_conn
 import ec.users
 from ec import fb
+from ec import et
 
 
 class BasePage(web.RequestHandler):
@@ -51,7 +52,9 @@ class HomePage(BasePage):
         if error:
             self.render("templates/error-page.html", error=error)
         else:
-            self.render("templates/home-page.html", name=user['name'])
+            self.render("templates/home-page.html",
+                        user=user,
+                        name=user['name'])
 
 
 class LoginPage(BasePage):
@@ -103,3 +106,19 @@ class LogoutPage(BasePage):
         ec.users.clear_fb_access_token(self.current_user.id)
         self.clear_all_cookies()
         return self.redirect('/')
+
+class CreateExerciseTypePage(BasePage):
+
+    def post(self):
+        name = self.get_argument('name')
+        description = self.get_argument('description')
+        et.create_exercise_type(name, description)
+        self.redirect('/exercises')
+
+
+class ExerciseTypesPage(BasePage):
+    def get(self):
+        exercise_types = et.get_all_exercise_types()
+        self.render("templates/exercise-types-page.html",
+                    form=self.render_string("templates/create-exercise-type-form.html"),
+                    exercise_types=exercise_types)

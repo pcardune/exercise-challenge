@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+{{ modules.Box("Create an Exercise", form) }}
+<div class="exercise-types">
+  {% for exercise_type in exercise_types %}
+  {{ modules.Box(escape(exercise_type.name), escape(exercise_type.description)) }}
+  {% end %}
+</div>
+
+{% end %}

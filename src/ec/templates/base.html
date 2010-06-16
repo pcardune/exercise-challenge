@@ -1,16 +1,35 @@
 <html>
   <head>
     <title>{% block title %}Exercise Challenge{% end %}</title>
+    {% if not OPTIONS.offline %}
     <link rel="stylesheet" type="text/css"
           href="http://yui.yahooapis.com/combo?2.6.0/build/reset-fonts/reset-fonts.css"
           />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"
+            type="text/javascript"
+            language="Javascript"></script>
+    {% else %}
+    <link rel="stylesheet" type="text/css"
+          href="{{ static_url('css/reset-fonts.css') }}"
+          />
+    <script type="text/javascript" src="{{ static_url('js/jquery.min.js') }}"></script>
+    {% end %}
     <link rel="stylesheet" type="text/css"
           href="{{ static_url('css/style.css') }}" />
+    <script type="text/javascript" src="{{ static_url('js/ajaxer.js') }}"></script>
+
   </head>
   <body>
     <div id="body">
       <div id="header">
         <h1>Exercise Challenge</h1>
+        <div id="nav">
+          {% if current_user %}
+          <a href="/logout">Log out</a>
+          {% else %}
+          <a href="/login">Log in</a>
+          {% end %}
+        </div>
       </div>
       <div id="content">
         {% block body %}

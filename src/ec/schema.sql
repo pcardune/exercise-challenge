@@ -25,3 +25,10 @@ CREATE TABLE entries (
        INDEX (user_id),
        INDEX (exercise_type)
        );
+
+
+CREATE TABLE cache (
+       `key` VARCHAR(512) NOT NULL PRIMARY KEY,
+       `value` TEXT NOT NULL,
+       INDEX (`key`)
+       );
