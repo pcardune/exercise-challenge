@@ -73,7 +73,7 @@ class HomePage(BasePage):
             for data_point in entry['data_points']:
                 data_point['measure'] = et.get_measure(data_point.measure_id)
 
-        entries_by_date = sorted(by_date.items())
+        entries_by_date = sorted(by_date.items(), reverse=True)
 
         return self.render_string(
             "templates/entries-snippet.html",
@@ -163,9 +163,13 @@ class CreateEntryPage(BasePage):
         exercise_type = et.get_exercise_type(
             int(self.get_argument("et")))
 
+        date = datetime.datetime.strptime(
+            self.get_argument('date'),
+            "%Y-%m-%d")
+
         entry_id = ec.entries.create_entry(
             self.current_user.id,
-            datetime.date.today(),
+            date,
             exercise_type.id)
 
         measures = et.get_measures_for_exercise_type(exercise_type.id)

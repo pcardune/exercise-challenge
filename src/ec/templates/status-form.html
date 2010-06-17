@@ -1,8 +1,15 @@
+{% import datetime %}
 <form id="status_form" class="status-form"
       method="{{'POST' if selected_exercise else ''}}"
       action="{{'/entries/create' if selected_exercise else ''}}">
   <label for="status">
-    What were your exercises today?
+    What were your exercises
+    <select name="date">
+      {% set today = datetime.date.today() %}
+      <option value="{{today}}">today</option>
+      <option value="{{today-datetime.timedelta(days=1)}}">yesterday</option>
+      <option value="{{today-datetime.timedelta(days=2)}}">2 days ago</option>
+    </select>?
   </label>
   <select name="et">
     <option>Select an exercise...</option>
@@ -27,7 +34,7 @@
 </form>
 
 <script type="text/javascript">
-  $("#status_form select").change(
+  $("#status_form select[name='et']").change(
     function() {
       var val = $(this).val();
       window.location = window.location.pathname+"?et="+val;
