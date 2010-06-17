@@ -16,8 +16,9 @@
     {% for et in exercise_types %}
     {% if et.id == selected_exercise %}
     <option value="{{et.id}}" selected="selected">{{et.name}}</option>
-    {% end %}
+    {% else %}
     <option value="{{et.id}}">{{et.name}}</option>
+    {% end %}
     {% end %}
   </select>
   {% if measures %}
