@@ -8,9 +8,16 @@ CREATE TABLE users (
 CREATE TABLE exercise_types (
        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
        name TEXT,
-       description TEXT
+       description TEXT,
        );
 
+CREATE TABLE measures (
+       id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+       exercise_type_id INT NOT NULL,
+       unit TEXT,
+       FOREIGN KEY (exercise_type_id) REFERENCES exercise_types(id)
+               ON DELETE CASCADE ON UPDATE CASCADE
+       );
 
 CREATE TABLE entries (
        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -26,6 +33,16 @@ CREATE TABLE entries (
        INDEX (exercise_type)
        );
 
+CREATE TABLE data_points (
+       id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+       entry_id INT NOT NULL,
+       measure_id INT NOT NULL,
+       `value` TEXT,
+       FOREIGN KEY (entry_id) REFERENCES entries(id)
+               ON DELETE CASCADE ON UPDATE CASCADE,
+       FOREIGN KEY (measure_id) REFERENCES measures(id)
+               ON DELETE CASCADE ON UPDATE CASCADE
+       );
 
 CREATE TABLE cache (
        `key` VARCHAR(512) NOT NULL PRIMARY KEY,

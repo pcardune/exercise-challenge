@@ -62,6 +62,7 @@ if __name__ == "__main__":
         (r'/home', ec.pages.HomePage),
         (r'/exercises', ec.pages.ExerciseTypesPage),
         (r'/exercises/create', ec.pages.CreateExerciseTypePage),
+        (r'/entries/create', ec.pages.CreateEntryPage),
     ], **settings)
 
 

@@ -1,0 +1,10 @@
+<ul>
+  {% for entry in entries %}
+  <li>
+    <strong>{{ entry.exercise_type.name }}:</strong>
+    {% for data_point in entry.data_points %}
+    {{ data_point.value }} {{ data_point.measure.unit }}
+    {% end %}
+  </li>
+  {% end %}
+<ul>

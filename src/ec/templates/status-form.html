@@ -1,0 +1,35 @@
+<form id="status_form" class="status-form"
+      method="{{'POST' if selected_exercise else ''}}"
+      action="{{'/entries/create' if selected_exercise else ''}}">
+  <label for="status">
+    What were your exercises today?
+  </label>
+  <select name="et">
+    <option>Select an exercise...</option>
+    {% for et in exercise_types %}
+    {% if et.id == selected_exercise %}
+    <option value="{{et.id}}" selected="selected">{{et.name}}</option>
+    {% end %}
+    <option value="{{et.id}}">{{et.name}}</option>
+    {% end %}
+  </select>
+  {% if measures %}
+  {% for measure in measures %}
+  <div>
+    <input type="text" name="measure-{{measure.id}}-value"/>
+    {{measure.unit}}
+  </div>
+  {% end %}
+  <div class="actions">
+    <button type="submit">Update</button>
+  </div>
+  {% end %}
+</form>
+
+<script type="text/javascript">
+  $("#status_form select").change(
+    function() {
+      var val = $(this).val();
+      window.location = window.location.pathname+"?et="+val;
+    });
+</script>

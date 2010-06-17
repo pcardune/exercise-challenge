@@ -1,9 +1,11 @@
 import urlparse
+import datetime
 from tornado import database, web, auth, httpclient, escape
 from tornado.options import define, options
 
 from ec.db import get_conn
 import ec.users
+import ec.entries
 from ec import fb
 from ec import et
 
@@ -48,13 +50,44 @@ class HomePage(BasePage):
                     self.current_user,
                     self.async_callback(self._on_get_user))
 
+    def render_status_form(self):
+        selected_exercise = self.get_argument("et", None)
+        measures = None
+        if selected_exercise:
+            selected_exercise = int(selected_exercise)
+            measures = et.get_measures_for_exercise_type(selected_exercise)
+        return self.render_string(
+            "templates/status-form.html",
+            exercise_types=et.get_all_exercise_types(),
+            selected_exercise=selected_exercise,
+            measures=measures)
+
+    def render_entries(self):
+        entries = ec.entries.get_entries_for_user(self.current_user.id)
+        by_date = {}
+        for entry in entries:
+            by_date.setdefault(entry.date, [])
+            by_date[entry.date].append(entry)
+            entry['exercise_type'] = et.get_exercise_type(entry.exercise_type)
+            entry['data_points'] = ec.entries.get_data_points_for_entry(entry.id)
+            for data_point in entry['data_points']:
+                data_point['measure'] = et.get_measure(data_point.measure_id)
+
+        entries_by_date = sorted(by_date.items())
+
+        return self.render_string(
+            "templates/entries-snippet.html",
+            entries_by_date=entries_by_date)
+
     def _on_get_user(self, user, error=None):
         if error:
             self.render("templates/error-page.html", error=error)
         else:
             self.render("templates/home-page.html",
                         user=user,
-                        name=user['name'])
+                        status_form=self.render_status_form(),
+                        entries=self.render_entries(),
+                        )
 
 
 class LoginPage(BasePage):
@@ -107,6 +140,7 @@ class LogoutPage(BasePage):
         self.clear_all_cookies()
         return self.redirect('/')
 
+
 class CreateExerciseTypePage(BasePage):
 
     def post(self):
@@ -122,3 +156,22 @@ class ExerciseTypesPage(BasePage):
         self.render("templates/exercise-types-page.html",
                     form=self.render_string("templates/create-exercise-type-form.html"),
                     exercise_types=exercise_types)
+
+
+class CreateEntryPage(BasePage):
+    def post(self):
+        exercise_type = et.get_exercise_type(
+            int(self.get_argument("et")))
+
+        entry_id = ec.entries.create_entry(
+            self.current_user.id,
+            datetime.date.today(),
+            exercise_type.id)
+
+        measures = et.get_measures_for_exercise_type(exercise_type.id)
+        for measure in measures:
+            value = self.get_argument("measure-%s-value" % measure.id)
+            ec.entries.create_data_point(
+                entry_id, measure.id, value)
+
+        self.redirect('/home')

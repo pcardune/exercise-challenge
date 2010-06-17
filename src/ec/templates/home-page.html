@@ -1,30 +1,6 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="box medium">
-  <span class="box-legend">{{name}}</span>
-  <div class="box-inner">
-    <div class="box-content">
-      <div class="left-right">
-        <div class="left">
-          <div class="profile-pic">
-            <img src="http://graph.facebook.com/{{current_user.fbid}}/picture" />
-          </div>
-        </div>
-        <div class="right">
-          <form class="status-form">
-            <label for="status">
-              What were your exercises today?
-            </label>
-            <input type="text" name="status"/>
-            <button type="submit">Update</button>
-          </form>
-        </div>
-        <div class="clear" />
-      </div>
-    </div>
-  </div>
-</div>
-
-{{ modules.UserBox(user, "hello") }}
+{{ modules.UserBox(user, status_form) }}
+{{ entries }}
 {% end %}

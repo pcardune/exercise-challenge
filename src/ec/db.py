@@ -13,11 +13,11 @@ def get_conn():
         user=options.mysql_user,
         password=options.mysql_passwd)
 
-def cache_get(keyfunc, dbfunc, *args, **kwargs):
-    from ec import cache
-    key = keyfunc(*args, **kwargs)
-    result = cache.get(key)
-    if result is None:
-        result = dbfunc(*args, **kwargs)
-        cache.set(key, result)
-    return result
+def get(*args):
+    return get_conn().get(*args)
+
+def execute(*args):
+    return get_conn().execute(*args)
+
+def query(*args):
+    return get_conn().query(*args)

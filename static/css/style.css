@@ -8,6 +8,10 @@ a:visited {
     font-weight: bold;
 }
 
+strong {
+    font-weight: bold;
+}
+
 #body {
     width: 900px;
     margin: auto;
@@ -79,11 +83,17 @@ form.status-form label {
 }
 
 form.status-form input {
-    width: 350px;
     border: 1px solid #aaa;
     padding: 2px;
     font-weight: bold;
     margin-top: 13px;
+}
+
+form.status-form div.actions {
+    text-align: right;
+    border-top: 1px solid #ddd;
+    margin-top: 10px;
+    padding: 5px 5px 0;
 }
 
 form.create-exercise-type div label {
@@ -99,7 +109,7 @@ form.create-exercise-type div.actions {
     margin-top: 10px;
     padding: 5px 5px 0;
 }
-
+div.entries-by-date div.box,
 div.exercise-types div.box {
     margin-top: 10px;
 }
