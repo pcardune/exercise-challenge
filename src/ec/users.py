@@ -30,7 +30,7 @@ def create_user(fbid, fb_access_token):
 def clear_fb_access_token(uid):
     return db.execute("UPDATE users SET fb_access_token=null WHERE id=%s", uid)
 
-@cache.invalidates(_get_user_cache_key)
 def set_fb_access_token(uid, access_token):
+    cache.remove(_get_user_cache_key(uid))
     return db.execute("UPDATE users SET fb_access_token=%s WHERE id=%s",
                       access_token, uid)
