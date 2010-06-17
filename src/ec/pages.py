@@ -62,7 +62,7 @@ class HomePage(BasePage):
             selected_exercise=selected_exercise,
             measures=measures)
 
-    def render_entries(self):
+    def get_entries_by_date(self, uid):
         entries = ec.entries.get_entries_for_user(self.current_user.id)
         by_date = {}
         for entry in entries:
@@ -73,20 +73,31 @@ class HomePage(BasePage):
             for data_point in entry['data_points']:
                 data_point['measure'] = et.get_measure(data_point.measure_id)
 
-        entries_by_date = sorted(by_date.items(), reverse=True)
+        return sorted(by_date.items(), reverse=True)
 
+    def render_entries(self):
         return self.render_string(
             "templates/entries-snippet.html",
-            entries_by_date=entries_by_date)
+            entries_by_date=self.get_entries_by_date(self.current_user.id))
 
     def _on_get_user(self, user, error=None):
         if error:
             self.render("templates/error-page.html", error=error)
         else:
+            self.user = user
+            fb.get_user_friends_on_here(self.current_user.fbid,
+                                        self.current_user,
+                                        self.async_callback(self._on_get_friends))
+
+    def _on_get_friends(self, friends, error=None):
+        if error:
+            self.render("templates/error-page.html", error=error)
+        else:
             self.render("templates/home-page.html",
-                        user=user,
+                        user=self.user,
                         status_form=self.render_status_form(),
                         entries=self.render_entries(),
+                        friends=friends,
                         )
 
 
@@ -145,7 +156,7 @@ class CreateExerciseTypePage(BasePage):
 
     def post(self):
         name = self.get_argument('name')
-        description = self.get_argument('description')
+        description = self.get_argument('description', '')
         et.create_exercise_type(name, description)
         self.redirect('/exercises')
 
@@ -174,8 +185,24 @@ class CreateEntryPage(BasePage):
 
         measures = et.get_measures_for_exercise_type(exercise_type.id)
         for measure in measures:
-            value = self.get_argument("measure-%s-value" % measure.id)
-            ec.entries.create_data_point(
-                entry_id, measure.id, value)
+            value = self.get_argument("measure-%s-value" % measure.id, None)
+            if value:
+                ec.entries.create_data_point(
+                    entry_id, measure.id, value)
 
         self.redirect('/home')
+
+class UserPage(BasePage):
+    @web.asynchronous
+    def get(self, uid):
+        user = ec.users.get_user(uid)
+        fb.get_user(user.fbid,
+                    self.current_user,
+                    self.async_callback(self._on_get_user))
+
+    def _on_get_user(self, fbuser, error=None):
+        if error:
+            self.render("templates/error-page.html", error=error)
+        else:
+            self.render("templates/user-page.html",
+                        user=fbuser)

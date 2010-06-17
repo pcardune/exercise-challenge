@@ -16,6 +16,9 @@ def get_user(uid):
                      dbget_user,
                      uid)
 
+def get_users_with_fbids(fbids):
+    return db.query("SELECT * FROM users WHERE fbid IN "+db.format_in(fbids), *fbids)
+
 def dbget_user_by_fbid(fbid):
     return db.get("SELECT * FROM users WHERE fbid=%s", fbid)
 

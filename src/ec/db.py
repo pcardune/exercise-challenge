@@ -21,3 +21,6 @@ def execute(*args):
 
 def query(*args):
     return get_conn().query(*args)
+
+def format_in(items):
+    return "(%s)" % (len(items)*"%s,")[:-1]

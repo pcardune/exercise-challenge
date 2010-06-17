@@ -22,6 +22,10 @@ strong {
     font-size: 200%;
     padding: 20px;
 }
+#header h1 a {
+    color: black;
+    text-decoration: none;
+}
 
 #nav {
     text-align: center;
@@ -63,6 +67,11 @@ div.box-content {
 div.box.medium {
     width: 500px;
     margin: auto;
+}
+
+div.box.right {
+    width: 170px;
+    float: right;
 }
 
 

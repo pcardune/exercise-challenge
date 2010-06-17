@@ -5,6 +5,7 @@ from tornado import httpclient, escape
 
 from ec.log import logger
 from ec import cache
+import ec.users
 
 define("fb_endpoint", default="graph.facebook.com", help="Facebook API Endpoint")
 define("fb_app_id", default='125917107430749')
@@ -49,6 +50,10 @@ def get_user_cachekey(fbid, viewer):
 def get_user_friends_cachekey(fbid, viewer):
     return "friends:%s:%s" % (fbid, viewer.fbid)
 
+@cache.key
+def dbget_user_friends_on_here_cachekey(fbid, viewer):
+    return "friends-local:%s:%s" % (fbid, viewer.fbid)
+
 def _cache_get(key, callback, getter_func, *args):
     result = cache.get(key)
     if result:
@@ -75,6 +80,12 @@ def get_user_friends(fbid, viewer, callback):
     _cache_get(get_user_friends_cachekey(fbid, viewer),
                callback,
                fbget_user_friends,
+               fbid, viewer)
+
+def get_user_friends_on_here(fbid, viewer, callback):
+    _cache_get(dbget_user_friends_on_here_cachekey(fbid, viewer),
+               callback,
+               dbget_user_friends_on_here,
                fbid, viewer)
 
 def _json_callback_wrapper(callback):
@@ -120,3 +131,15 @@ def fbget_self(access_token, callback):
         else:
             callback(None, error=response.body)
     httpclient.AsyncHTTPClient().fetch(url, callback=wrapper)
+
+def dbget_user_friends_on_here(fbid, viewer, callback):
+    def _on_get_user_friends(friends, error=None):
+        if error:
+            callback(None, error)
+        else:
+            friend_by_fbid = dict((long(f['id']),f) for f in friends['data'])
+            local_friends = ec.users.get_users_with_fbids(friend_by_fbid.keys())
+            for friend in local_friends:
+                friend['fbuser'] = friend_by_fbid[friend.fbid]
+            callback(local_friends)
+    get_user_friends(fbid, viewer, _on_get_user_friends)

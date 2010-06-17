@@ -49,3 +49,4 @@ CREATE TABLE cache (
        `value` TEXT NOT NULL,
        INDEX (`key`)
        );
+

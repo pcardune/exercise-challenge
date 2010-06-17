@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 
 {% block body %}
+<div class="friend-list box right">
+  <span class="box-legend">Your Friends</span>
+  <div class="box-inner">
+    <div class="box-content">
+      {% for friend in friends %}
+      <a href="/users/{{friend.id}}">
+        <img src="http://graph.facebook.com/{{friend.fbid}}/picture"/>
+      </a>
+      {% end %}
+    </div>
+  </div>
+</div>
 {{ modules.UserBox(user, status_form) }}
 {{ entries }}
 {% end %}
