@@ -2,6 +2,7 @@ import logging
 import functools
 import pickle
 import datetime
+from tornado.database import OperationalError
 
 from ec.db import get_conn
 
@@ -34,8 +35,14 @@ class DatabaseCacheBackend(object):
         delta = datetime.timedelta(seconds=timeout)
         db = get_conn()
         self.remove(key)
-        db.execute("INSERT INTO cache (`key`, `value`, `dt`) VALUES (%s, %s, %s)",
-                   key, pickle.dumps(val), datetime.datetime.now()+delta)
+        expiration = datetime.datetime.now()+delta
+        try:
+            db.execute("INSERT INTO cache (`key`, `value`, `dt`) VALUES (%s, %s, %s)",
+                       key, pickle.dumps(val), expiration)
+        except OperationalError, e:
+            logging.error("Got error setting %r=%r in cache: %r",
+                          key, val, e)
+        logging.info("cache set: %r=%r expires at %r", key, val, expiration)
 
     def get(self, key, default=None):
         db = get_conn()
