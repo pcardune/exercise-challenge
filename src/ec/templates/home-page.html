@@ -6,7 +6,7 @@
   <div class="box-inner">
     <div class="box-content">
       {% for friend in friends %}
-      <a href="/users/{{friend.id}}">
+      <a href="/users/{{friend.fbid}}">
         <img src="http://graph.facebook.com/{{friend.fbid}}/picture"/>
       </a>
       {% end %}

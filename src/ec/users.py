@@ -11,10 +11,11 @@ def _get_user_cache_key(uid):
 def dbget_user(uid):
     return db.get("SELECT * FROM users WHERE id=%s", uid)
 
-def get_user(uid):
-    return cache_get(_get_user_cache_key,
-                     dbget_user,
-                     uid)
+get_user = dbget_user
+#def get_user(uid):
+#    return cache_get(_get_user_cache_key,
+#                     dbget_user,
+#                     uid)
 
 def get_users_with_fbids(fbids):
     return db.query("SELECT * FROM users WHERE fbid IN "+db.format_in(fbids), *fbids)

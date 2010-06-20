@@ -62,23 +62,10 @@ class HomePage(BasePage):
             selected_exercise=selected_exercise,
             measures=measures)
 
-    def get_entries_by_date(self, uid):
-        entries = ec.entries.get_entries_for_user(self.current_user.id)
-        by_date = {}
-        for entry in entries:
-            by_date.setdefault(entry.date, [])
-            by_date[entry.date].append(entry)
-            entry['exercise_type'] = et.get_exercise_type(entry.exercise_type)
-            entry['data_points'] = ec.entries.get_data_points_for_entry(entry.id)
-            for data_point in entry['data_points']:
-                data_point['measure'] = et.get_measure(data_point.measure_id)
-
-        return sorted(by_date.items(), reverse=True)
-
     def render_entries(self):
         return self.render_string(
             "templates/entries-snippet.html",
-            entries_by_date=self.get_entries_by_date(self.current_user.id))
+            entries_by_date=ec.entries.get_entries_by_date(self.current_user.id))
 
     def _on_get_user(self, user, error=None):
         if error:
@@ -194,9 +181,9 @@ class CreateEntryPage(BasePage):
 
 class UserPage(BasePage):
     @web.asynchronous
-    def get(self, uid):
-        user = ec.users.get_user(uid)
-        fb.get_user(user.fbid,
+    def get(self, fbid):
+        self.user = ec.users.get_user_by_fbid(fbid)
+        fb.get_user(fbid,
                     self.current_user,
                     self.async_callback(self._on_get_user))
 
@@ -204,5 +191,10 @@ class UserPage(BasePage):
         if error:
             self.render("templates/error-page.html", error=error)
         else:
+            entries = self.render_string(
+                "templates/entries-snippet.html",
+                entries_by_date=ec.entries.get_entries_by_date(self.user.id))
             self.render("templates/user-page.html",
-                        user=fbuser)
+                        user=self.user,
+                        fbuser=fbuser,
+                        entries=entries)

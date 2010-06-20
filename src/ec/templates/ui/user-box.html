@@ -1,6 +1,6 @@
 {% extends "box.html" %}
 
-{% block legend %} {{escape(user['name'])}} {% end %}
+{% block legend %} <a href="/users/{{user['id']}}">{{escape(user['name'])}}</a> {% end %}
 {% block content %}
 {{ modules.LeftRight(left=modules.ProfilePic(user), right=content) }}
 {% end %}

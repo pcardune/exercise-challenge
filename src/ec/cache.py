@@ -1,6 +1,7 @@
 import logging
 import functools
 import pickle
+import datetime
 
 from ec.db import get_conn
 
@@ -11,7 +12,7 @@ class SimpleCacheBackend(object):
     def __init__(self):
         self._CACHE = {}
 
-    def set(self, key, val):
+    def set(self, key, val, timeout=24*60*60):
         logging.info("cache set: %r=%r", key, val)
         self._CACHE[key] = val
 
@@ -29,16 +30,19 @@ class SimpleCacheBackend(object):
 
 class DatabaseCacheBackend(object):
 
-    def set(self, key, val):
+    def set(self, key, val, timeout=24*60*60):
+        delta = datetime.timedelta(seconds=timeout)
         db = get_conn()
         self.remove(key)
-        db.execute("INSERT INTO cache (`key`, `value`) VALUES (%s, %s)",
-                   key, pickle.dumps(val))
+        db.execute("INSERT INTO cache (`key`, `value`, `dt`) VALUES (%s, %s, %s)",
+                   key, pickle.dumps(val), datetime.datetime.now()+delta)
 
     def get(self, key, default=None):
         db = get_conn()
         r = db.get("SELECT * FROM cache WHERE `key`=%s", key)
-        return pickle.loads(str(r.value)) if r else None
+        if not r or not r.dt or r.dt < datetime.datetime.now():
+            return None
+        return pickle.loads(str(r.value))
 
     def remove(self, key):
         db = get_conn()
@@ -53,8 +57,8 @@ class DatabaseCacheBackend(object):
 BACKEND = SimpleCacheBackend()
 BACKEND = DatabaseCacheBackend()
 
-def set(key, val):
-    return BACKEND.set(key, val)
+def set(key, val, timeout=24*60*60):
+    return BACKEND.set(key, val, timeout=timeout)
 
 def get(key, default=None):
     return BACKEND.get(key, default=default)
@@ -96,11 +100,11 @@ def invalidates(cachekey_func):
     return decorator
 
 
-def cache_get(keyfunc, dbfunc, *args, **kwargs):
+def cache_get(keyfunc, dbfunc, args=(), kwargs={}, timeout=24*60*60):
     from ec import cache
     key = keyfunc(*args, **kwargs)
     result = cache.get(key)
     if result is None:
         result = dbfunc(*args, **kwargs)
-        cache.set(key, result)
+        cache.set(key, result, timeout=timeout)
     return result

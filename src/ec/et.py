@@ -32,7 +32,7 @@ def dbget_exercise_type(exercise_type_id):
 def get_exercise_type(exercise_type_id):
     return cache.cache_get(_get_exercise_type_cache_key,
                            dbget_exercise_type,
-                           exercise_type_id)
+                           args=(exercise_type_id,))
 
 def create_exercise_type(name, description):
     cache.remove(_get_all_exercise_types_cache_key())
@@ -47,7 +47,7 @@ def dbget_measures_for_exercise_type(exercise_type_id):
 def get_measures_for_exercise_type(exercise_type_id):
     return cache_get(_get_measure_for_exercise_type_cache_key,
                      dbget_measures_for_exercise_type,
-                     exercise_type_id)
+                     args=(exercise_type_id,))
 
 def dbget_measure(measure_id):
     return db.get("SELECT * FROM measures WHERE id=%s", measure_id)
@@ -55,4 +55,4 @@ def dbget_measure(measure_id):
 def get_measure(measure_id):
     return cache.cache_get(_get_measure_cache_key,
                            dbget_measure,
-                           measure_id)
+                           args=(measure_id,))

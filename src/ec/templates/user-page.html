@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
 {% block body %}
-{{ modules.UserBox(user, user.get('location',{}).get('name','')) }}
+{{ modules.UserBox(fbuser, fbuser.get('location',{}).get('name','')) }}
+{{ entries }}
 {% end %}

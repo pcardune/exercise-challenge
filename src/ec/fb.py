@@ -54,14 +54,14 @@ def get_user_friends_cachekey(fbid, viewer):
 def dbget_user_friends_on_here_cachekey(fbid, viewer):
     return "friends-local:%s:%s" % (fbid, viewer.fbid)
 
-def _cache_get(key, callback, getter_func, *args):
+def _cache_get(key, callback, getter_func, args=(), timeout=24*60*60):
     result = cache.get(key)
     if result:
         callback(result)
     else:
         def wrapper(result, error=None):
             if not error:
-                cache.set(key, result)
+                cache.set(key, result, timeout=timeout)
             callback(result, error=error)
         getter_func(*(args+(wrapper,)))
 
@@ -74,19 +74,23 @@ def get_user(fbid, viewer, callback):
     _cache_get(get_user_cachekey(fbid, viewer),
                callback,
                fbget_user,
-               fbid, viewer)
+               args=(fbid, viewer),
+               timeout=15)
 
 def get_user_friends(fbid, viewer, callback):
     _cache_get(get_user_friends_cachekey(fbid, viewer),
                callback,
                fbget_user_friends,
-               fbid, viewer)
+               args=(fbid, viewer),
+               timeout=15)
+
 
 def get_user_friends_on_here(fbid, viewer, callback):
     _cache_get(dbget_user_friends_on_here_cachekey(fbid, viewer),
                callback,
                dbget_user_friends_on_here,
-               fbid, viewer)
+               args=(fbid, viewer),
+               timeout=15)
 
 def _json_callback_wrapper(callback):
     def wrapper(response):
