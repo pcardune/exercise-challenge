@@ -71,8 +71,10 @@ div.box.medium {
 }
 
 div.box.right {
-    width: 170px;
+    width: 180px;
     float: right;
+    position: relative;
+    left: 10px;
 }
 
 
