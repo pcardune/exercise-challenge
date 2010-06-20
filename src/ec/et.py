@@ -56,3 +56,4 @@ def get_measure(measure_id):
     return cache.cache_get(_get_measure_cache_key,
                            dbget_measure,
                            args=(measure_id,))
+

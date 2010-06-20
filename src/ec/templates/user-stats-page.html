@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block body %}
+{{ modules.UserBox(fbuser, fbuser.get('location',{}).get('name','')) }}
+{% for stat in stats %}
+{% end %}
+
+{% end %}

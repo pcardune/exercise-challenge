@@ -1,6 +1,12 @@
 <ul>
   {% for entry in entries %}
   <li>
+    {% if can_delete %}
+    <form type="submit" method="POST" action="/entries/{{entry.id}}/delete"
+          class="x-out-form">
+      <button type="submit" class="x-out-button" title="Delete this entry">X</button>
+    </form>
+    {% end %}
     <strong>{{ entry.exercise_type.name }}:</strong>
     {% for data_point in entry.data_points %}
     {{ data_point.value }} {{ data_point.measure.unit }}

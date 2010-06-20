@@ -62,11 +62,6 @@ class HomePage(BasePage):
             selected_exercise=selected_exercise,
             measures=measures)
 
-    def render_entries(self):
-        return self.render_string(
-            "templates/entries-snippet.html",
-            entries_by_date=ec.entries.get_entries_by_date(self.current_user.id))
-
     def _on_get_user(self, user, error=None):
         if error:
             self.render("templates/error-page.html", error=error)
@@ -83,7 +78,7 @@ class HomePage(BasePage):
             self.render("templates/home-page.html",
                         user=self.user,
                         status_form=self.render_status_form(),
-                        entries=self.render_entries(),
+                        entries_by_date=ec.entries.get_entries_by_date(self.current_user.id),
                         friends=friends,
                         )
 
@@ -179,7 +174,8 @@ class CreateEntryPage(BasePage):
 
         self.redirect('/home')
 
-class UserPage(BasePage):
+
+class BaseUserPage(BasePage):
     @web.asynchronous
     def get(self, fbid):
         self.user = ec.users.get_user_by_fbid(fbid)
@@ -191,10 +187,35 @@ class UserPage(BasePage):
         if error:
             self.render("templates/error-page.html", error=error)
         else:
-            entries = self.render_string(
-                "templates/entries-snippet.html",
-                entries_by_date=ec.entries.get_entries_by_date(self.user.id))
-            self.render("templates/user-page.html",
-                        user=self.user,
-                        fbuser=fbuser,
-                        entries=entries)
+            self.on_get_user(fbuser)
+
+
+class UserPage(BaseUserPage):
+
+    def on_get_user(self, fbuser):
+        self.render("templates/user-page.html",
+                    user=self.user,
+                    fbuser=fbuser,
+                    entries_by_date=ec.entries.get_entries_by_date(self.user.id),
+                    can_delete=False)
+
+
+class UserStatsPage(BaseUserPage):
+
+#    def get_charts(self):
+#        by_date = ec.entries.get_entries_by_date(uid)
+#        for date, entries in ec.entries.
+
+    def on_get_user(self, fbuser):
+        self.render("templates/user-stats-page.html",
+                    user=self.user,
+                    fbuser=fbuser,
+                    chars=self.get_charts())
+
+
+class DeleteEntryPage(BasePage):
+    def post(self, entry_id):
+        entry = ec.entries.get_entry(entry_id)
+        if entry.user_id == self.current_user.id:
+            ec.entries.delete_entry(entry_id)
+        self.redirect('/home')

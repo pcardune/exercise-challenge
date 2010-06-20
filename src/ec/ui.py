@@ -20,12 +20,13 @@ class UserBox(Box):
             content=content)
 
 class EntriesBox(Box):
-    def render(self, date, entries):
+    def render(self, date, entries, can_delete=False):
         return super(EntriesBox, self).render(
             legend=date.strftime("%B %d"),
             content=self.render_string(
                 "templates/ui/entries-list.html",
-                entries=entries))
+                entries=entries,
+                can_delete=can_delete))
 
 class ProfilePic(UIModule):
     def render(self, user):

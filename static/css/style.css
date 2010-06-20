@@ -87,7 +87,7 @@ div.left-right div.right {
     margin-left: 5px;
 }
 div.left-right div.clear {
-    clear: both;
+    clear: left;
 }
 
 form.status-form label {
@@ -124,4 +124,16 @@ form.create-exercise-type div.actions {
 div.entries-by-date div.box,
 div.exercise-types div.box {
     margin-top: 10px;
+}
+
+div.entries-by-date form.x-out-form {
+    display: inline;
+}
+div.entries-by-date button.x-out-button {
+    background: none;
+    border: 0px;
+    cursor: pointer;
+    font-weight: bold;
+    color: red;
+    padding: 0px;
 }

@@ -65,15 +65,19 @@ BACKEND = SimpleCacheBackend()
 BACKEND = DatabaseCacheBackend()
 
 def set(key, val, timeout=24*60*60):
+    return
     return BACKEND.set(key, val, timeout=timeout)
 
 def get(key, default=None):
+    return
     return BACKEND.get(key, default=default)
 
 def remove(key):
+    return
     return BACKEND.remove(key)
 
 def multiremove(keys):
+    return
     return BACKEND.multiremove(keys)
 
 

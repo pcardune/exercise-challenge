@@ -3,7 +3,7 @@
       method="{{'POST' if selected_exercise else ''}}"
       action="{{'/entries/create' if selected_exercise else ''}}">
   <label for="status">
-    What were your exercises
+    What did you do
     <select name="date">
       {% set today = datetime.date.today() %}
       <option value="{{today}}">today</option>
@@ -30,7 +30,7 @@
   </div>
   {% end %}
   <div class="actions">
-    <button type="submit">Update</button>
+    <button type="submit">Add</button>
   </div>
   {% end %}
 </form>

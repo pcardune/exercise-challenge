@@ -10,9 +10,31 @@
         <img src="http://graph.facebook.com/{{friend.fbid}}/picture"/>
       </a>
       {% end %}
+      <a href="/users/48101461">
+        <img src="http://graph.facebook.com/48101461/picture"/>
+      </a>
+      <a href="/users/48101461">
+        <img src="http://graph.facebook.com/48101461/picture"/>
+      </a>
+      <a href="/users/48101461">
+        <img src="http://graph.facebook.com/48101461/picture"/>
+      </a>
+      <a href="/users/48101461">
+        <img src="http://graph.facebook.com/48101461/picture"/>
+      </a>
+      <a href="/users/48101461">
+        <img src="http://graph.facebook.com/48101461/picture"/>
+      </a>
+      <a href="/users/48101461">
+        <img src="http://graph.facebook.com/48101461/picture"/>
+      </a>
     </div>
   </div>
 </div>
 {{ modules.UserBox(user, status_form) }}
-{{ entries }}
+<div class="entries-by-date">
+  {% for date, entries in entries_by_date %}
+  {{ modules.EntriesBox(date, entries, can_delete=True) }}
+  {% end %}
+</div>
 {% end %}
