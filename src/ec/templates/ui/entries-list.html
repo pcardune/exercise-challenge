@@ -1,6 +1,6 @@
 <ul>
   {% for index, entry in enumerate(entries) %}
-  {% set entry_url = "users/%s/entries/%s" % (user.fbid, entry.id) %}
+  {% set entry_url = "/users/%s/entries/%s" % (user.fbid, entry.id) %}
   <li>
     {% if can_delete %}
     <form type="submit" method="POST" action="{{entry_url}}/delete"
