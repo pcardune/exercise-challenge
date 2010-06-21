@@ -8,9 +8,28 @@ a:visited {
     font-weight: bold;
     text-decoration: none;
 }
+a.plain {
+    color: black;
+    font-weight: normal;
+}
 
 strong {
     font-weight: bold;
+}
+em {
+    font-style: italic;
+}
+
+p {
+    text-indent: 1em;
+    margin-bottom: 1em;
+}
+ul.bulleted {
+    margin-bottom: 1em;
+    margin-left: 2em;
+}
+ul.bulleted li {
+    list-style: disc;
 }
 
 #body {
@@ -148,9 +167,8 @@ div.entries-by-date div.comment {
     margin-left: 20px;
     font-style: italic;
 }
-div.entries-by-date a {
-    color: black;
-    font-weight: normal;
+div.entries-by-date div.shared {
+    float: right;
 }
 div.entries-by-date hr {
     border: 0;

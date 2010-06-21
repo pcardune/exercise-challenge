@@ -97,7 +97,8 @@ class LoginPage(BasePage):
         else:
             return self.redirect(fb.get_authorization_url(redirect_url,
                                                           scope=['offline_access',
-                                                                 'publish_stream']))
+                                                                 'publish_stream',
+                                                                 'read_stream']))
 
     def fail_auth(self, error=None):
         self.write("Facebook Authentication Failed :( %s" % error)
@@ -264,6 +265,7 @@ class DeleteEntryPage(BasePage):
 class UserEntryPage(BaseUserPage):
     @web.asynchronous
     def get(self, fbid, entry_id):
+        self.fbuser = self.fbfeed_item = None
         self.entry = ec.entries.get_entry(entry_id)
         self.user = ec.users.get_user(self.entry.user_id)
         if self.user.fbid != int(fbid):
@@ -271,7 +273,21 @@ class UserEntryPage(BaseUserPage):
         self._get_user(fbid)
 
     def on_get_user(self, fbuser):
+        self.fbuser = fbuser
+        if self.entry.fbshare_id:
+            fb.get_feed_item(self.entry.fbshare_id,
+                             self.current_user,
+                             self.async_callback(self._on_get_feed_item))
+        else:
+            self.done()
+
+    def _on_get_feed_item(self, fbfeed_item, error=None):
+        self.fbfeed_item = fbfeed_item
+        self.done()
+
+    def done(self):
         self.render("templates/user-entry-page.html",
                     user=self.user,
-                    fbuser=fbuser,
-                    entry=self.entry)
+                    fbuser=self.fbuser,
+                    entry=self.entry,
+                    fbfeed_item=self.fbfeed_item)

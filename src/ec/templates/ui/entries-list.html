@@ -8,17 +8,24 @@
       <button type="submit" class="x-out-button" title="Delete this entry">X</button>
     </form>
     {% end %}
-    <a href="{{entry_url}}">
+    <a href="{{entry_url}}" class="plain">
       <strong>{{ escape(entry.exercise_type.name) }}:</strong>
       {{escape(', '.join('%s %s' % (dp.value, dp.measure.unit) for dp in entry.data_points))}}
+      {% if entry.comment %}
+      <br />
+      <em>{{escape(entry.comment)}}</em>
+      {% end %}
     </a>
-    {% if entry.comment %}
-    <div class="comment">
-      <a href="{{entry_url}}">
-        {{escape(entry.comment)}}
+
+    {% if entry.fbshare_id %}
+    {% set user_id, story_id = entry.fbshare_id.split('_') %}
+    <div class="shared">
+      <a href="http://www.facebook.com/profile.php?v=wall&id={{user_id}}&story_fbid={{story_id}}">
+        Shared on Facebook
       </a>
     </div>
     {% end %}
+
     {% if not index == len(entries)-1 %}
     <hr/>
     {% end %}

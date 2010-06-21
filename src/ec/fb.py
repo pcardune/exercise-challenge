@@ -123,6 +123,10 @@ def fbget_user_friends(fbid, viewer, callback):
     """Returns the friends for the given user in the context of the viewer."""
     _get_json('/%s/friends' % fbid, callback, viewer=viewer)
 
+def fbget_feed_item(fbid, viewer, callback):
+    _get_json('/%s' % fbid, callback, viewer=viewer)
+
+get_feed_item = fbget_feed_item
 
 def fbget_self(access_token, callback):
     """Return the user associated with the given access token."""
