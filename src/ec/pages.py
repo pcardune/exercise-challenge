@@ -203,6 +203,8 @@ class CreateEntryPage(BasePage):
                        link=link,
                        description=description,
                        name="Exercise Challenge")
+        else:
+            self.redirect('/home')
 
     def _on_share(self, result, error=None):
         if error:
