@@ -1,0 +1,21 @@
+{% import datetime %}
+<form id="status_form" class="status-form"
+      method="{{'POST' if selected_exercise else ''}}"
+      action="{{'/entries/create' if selected_exercise else ''}}">
+  <label for="status">
+    What did you do
+    {{modules.Select("date",dates)}}
+  </label>
+  {{modules.Select("et", [(et.id, et.name) for et in exercise_types], prompt="Select an exercise...")}}
+  {% if measures %}
+  {% for measure in measures %}
+  <div>
+    <input type="text" name="measure-{{measure.id}}-value"/>
+    {{measure.unit}}
+  </div>
+  {% end %}
+  <div class="actions">
+    <button type="submit">Add</button>
+  </div>
+  {% end %}
+</form>

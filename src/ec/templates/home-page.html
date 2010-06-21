@@ -13,7 +13,7 @@
     </div>
   </div>
 </div>
-{{ modules.UserBox(user, status_form) }}
+{{ modules.UserBox(user, modules.StatusForm()) }}
 <div class="entries-by-date">
   {% for date, entries in entries_by_date %}
   {{ modules.EntriesBox(date, entries, can_delete=True) }}

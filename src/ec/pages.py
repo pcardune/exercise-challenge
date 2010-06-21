@@ -77,7 +77,6 @@ class HomePage(BasePage):
         else:
             self.render("templates/home-page.html",
                         user=self.user,
-                        status_form=self.render_status_form(),
                         entries_by_date=ec.entries.get_entries_by_date(self.current_user.id),
                         friends=friends,
                         )
