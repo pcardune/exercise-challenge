@@ -96,7 +96,8 @@ class LoginPage(BasePage):
                                 self.async_callback(self._on_access_token_recieved))
         else:
             return self.redirect(fb.get_authorization_url(redirect_url,
-                                                          scope=['offline_access']))
+                                                          scope=['offline_access',
+                                                                 'publish_stream']))
 
     def fail_auth(self, error=None):
         self.write("Facebook Authentication Failed :( %s" % error)
@@ -151,7 +152,18 @@ class ExerciseTypesPage(BasePage):
 
 
 class CreateEntryPage(BasePage):
+    @web.authenticated
+    @web.asynchronous
     def post(self):
+        fb.get_user(self.current_user.fbid,
+                    self.current_user,
+                    self.async_callback(self._on_get_user))
+
+    def _on_get_user(self, user, error=None):
+        if error:
+            self.render("templates/error-page.html", error=error)
+            return
+
         exercise_type = et.get_exercise_type(
             int(self.get_argument("et")))
 
@@ -159,24 +171,53 @@ class CreateEntryPage(BasePage):
             self.get_argument('date'),
             "%Y-%m-%d")
 
-        entry_id = ec.entries.create_entry(
+        comment = self.get_argument("comment","")
+        share = self.get_argument("share", None) == "share"
+
+        self.entry_id = ec.entries.create_entry(
             self.current_user.id,
             date,
-            exercise_type.id)
+            exercise_type.id,
+            comment)
 
         measures = et.get_measures_for_exercise_type(exercise_type.id)
+        txt = []
         for measure in measures:
             value = self.get_argument("measure-%s-value" % measure.id, None)
             if value:
                 ec.entries.create_data_point(
-                    entry_id, measure.id, value)
+                    self.entry_id, measure.id, value)
+                txt.append('%s %s' % (value, measure.unit))
+        description = '{0[first_name]} just did some {1.name}'.format(user, exercise_type)
+        description += ' (%s) for the Exercise Challenge!' % ', '.join(txt)
 
+        if share:
+            link = "http://www.exercisechallenge.org/users/%s/entries/%s" % (
+                self.current_user.fbid, self.entry_id)
+
+            fb.publish(self.current_user.fbid,
+                       self.current_user,
+                       self.async_callback(self._on_share),
+                       message=comment,
+                       link=link,
+                       description=description,
+                       name="Exercise Challenge")
+
+    def _on_share(self, result, error=None):
+        if error:
+            self.render("templates/error-page.html", error=error)
+            return
+        ec.entries.set_entry_shared(self.entry_id, result['id'])
         self.redirect('/home')
 
 
 class BaseUserPage(BasePage):
+
     @web.asynchronous
     def get(self, fbid):
+        self._get_user(fbid)
+
+    def _get_user(self, fbid):
         self.user = ec.users.get_user_by_fbid(fbid)
         fb.get_user(fbid,
                     self.current_user,
@@ -213,8 +254,24 @@ class UserStatsPage(BaseUserPage):
 
 
 class DeleteEntryPage(BasePage):
-    def post(self, entry_id):
+    def post(self, fbid, entry_id):
         entry = ec.entries.get_entry(entry_id)
         if entry.user_id == self.current_user.id:
             ec.entries.delete_entry(entry_id)
         self.redirect('/home')
+
+
+class UserEntryPage(BaseUserPage):
+    @web.asynchronous
+    def get(self, fbid, entry_id):
+        self.entry = ec.entries.get_entry(entry_id)
+        self.user = ec.users.get_user(self.entry.user_id)
+        if self.user.fbid != int(fbid):
+            raise web.HTTPError(404)
+        self._get_user(fbid)
+
+    def on_get_user(self, fbuser):
+        self.render("templates/user-entry-page.html",
+                    user=self.user,
+                    fbuser=fbuser,
+                    entry=self.entry)

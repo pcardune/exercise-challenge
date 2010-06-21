@@ -24,6 +24,8 @@ CREATE TABLE entries (
        user_id INT NOT NULL,
        date DATE NOT NULL,
        exercise_type INT NOT NULL,
+       comment TEXT,
+       fbshare_id TEXT,
        FOREIGN KEY (user_id) REFERENCES users(id)
                ON DELETE CASCADE ON UPDATE CASCADE,
        FOREIGN KEY (exercise_type) REFERENCES exercise_types(id)

@@ -147,3 +147,35 @@ def dbget_user_friends_on_here(fbid, viewer, callback):
                 friend['fbuser'] = friend_by_fbid[friend.fbid]
             callback(local_friends)
     get_user_friends(fbid, viewer, _on_get_user_friends)
+
+def publish(fbid, viewer, callback,
+            message=None,
+            picture=None,
+            link=None,
+            name=None,
+            caption=None,
+            description=None):
+    url = get_url("/%s/feed" % fbid, args={'access_token':viewer.fb_access_token})
+
+    def wrapper(response):
+        if not response.error:
+            callback(escape.json_decode(response.body))
+        else:
+            callback(None, error=response.body)
+
+    params = dict(
+        message=message,
+        picture=picture,
+        link=link,
+        name=name,
+        caption=caption,
+        description=description)
+    for key, val in params.items():
+        if not val:
+            del params[key]
+
+    httpclient.AsyncHTTPClient().fetch(
+        url,
+        callback=wrapper,
+        method="POST",
+        body=urllib.urlencode(params))

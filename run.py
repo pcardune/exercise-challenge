@@ -63,9 +63,10 @@ if __name__ == "__main__":
         (r'/exercises', ec.pages.ExerciseTypesPage),
         (r'/exercises/create', ec.pages.CreateExerciseTypePage),
         (r'/entries/create', ec.pages.CreateEntryPage),
-        (r'/entries/([0-9]+)/delete', ec.pages.DeleteEntryPage),
         (r'/users/([0-9]+)', ec.pages.UserPage),
         (r'/users/([0-9]+)/stats', ec.pages.UserStatsPage),
+        (r'/users/([0-9]+)/entries/([0-9]+)', ec.pages.UserEntryPage),
+        (r'/users/([0-9]+)/entries/([0-9]+)/delete', ec.pages.DeleteEntryPage),
     ], **settings)
 
 

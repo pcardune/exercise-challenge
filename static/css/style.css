@@ -94,11 +94,18 @@ form.status-form label {
     display: block;
 }
 
-form.status-form input {
+form.status-form div.row {
+    margin-top: 13px;
+}
+
+form.status-form input,
+form.status-form textarea {
     border: 1px solid #aaa;
     padding: 2px;
     font-weight: bold;
-    margin-top: 13px;
+}
+form.status-form textarea {
+    width: 300px;
 }
 
 form.status-form div.actions {
@@ -136,4 +143,16 @@ div.entries-by-date button.x-out-button {
     font-weight: bold;
     color: red;
     padding: 0px;
+}
+div.entries-by-date div.comment {
+    margin-left: 20px;
+    font-style: italic;
+}
+div.entries-by-date a {
+    color: black;
+    font-weight: normal;
+}
+div.entries-by-date hr {
+    border: 0;
+    border-bottom: 1px solid #ddd;
 }

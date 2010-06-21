@@ -2,6 +2,7 @@ import datetime
 from tornado.web import UIModule
 
 from ec import et
+import ec.users
 
 class Box(UIModule):
     def render(self, legend=None, content=''):
@@ -24,11 +25,24 @@ class UserBox(Box):
 
 class EntriesBox(Box):
     def render(self, date, entries, can_delete=False):
+        if entries:
+            user = ec.users.get_user(entries[0].user_id)
+        else:
+            user = None
+        for entry in entries:
+            if 'exercise_type' not in entry:
+                entry['exercise_type'] = et.get_exercise_type(entry.exercise_type_id)
+            if 'data_points' not in entry:
+                entry['data_points'] = ec.entries.get_data_points_for_entry(entry.id)
+            for data_point in entry['data_points']:
+                if 'measure' not in data_point:
+                    data_point['measure'] = et.get_measure(data_point.measure_id)
         return super(EntriesBox, self).render(
             legend=date.strftime("%B %d"),
             content=self.render_string(
                 "templates/ui/entries-list.html",
                 entries=entries,
+                user=user,
                 can_delete=can_delete))
 
 class ProfilePic(UIModule):

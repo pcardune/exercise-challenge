@@ -1,15 +1,26 @@
 <ul>
-  {% for entry in entries %}
+  {% for index, entry in enumerate(entries) %}
+  {% set entry_url = "users/%s/entries/%s" % (user.fbid, entry.id) %}
   <li>
     {% if can_delete %}
-    <form type="submit" method="POST" action="/entries/{{entry.id}}/delete"
+    <form type="submit" method="POST" action="{{entry_url}}/delete"
           class="x-out-form">
       <button type="submit" class="x-out-button" title="Delete this entry">X</button>
     </form>
     {% end %}
-    <strong>{{ entry.exercise_type.name }}:</strong>
-    {% for data_point in entry.data_points %}
-    {{ data_point.value }} {{ data_point.measure.unit }}
+    <a href="{{entry_url}}">
+      <strong>{{ escape(entry.exercise_type.name) }}:</strong>
+      {{escape(', '.join('%s %s' % (dp.value, dp.measure.unit) for dp in entry.data_points))}}
+    </a>
+    {% if entry.comment %}
+    <div class="comment">
+      <a href="{{entry_url}}">
+        {{escape(entry.comment)}}
+      </a>
+    </div>
+    {% end %}
+    {% if not index == len(entries)-1 %}
+    <hr/>
     {% end %}
   </li>
   {% end %}

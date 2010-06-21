@@ -9,11 +9,21 @@
   {{modules.Select("et", [(et.id, et.name) for et in exercise_types], prompt="Select an exercise...")}}
   {% if measures %}
   {% for measure in measures %}
-  <div>
+  <div class="row">
     <input type="text" name="measure-{{measure.id}}-value"/>
     {{measure.unit}}
   </div>
   {% end %}
+  <div class="row">
+    <label for="comment">Comments...</label>
+    <textarea name="comment"></textarea>
+  </div>
+  <div class="row">
+    <label for="share">
+      <input type="checkbox" name="share" value="share"/>
+      Post to Facebook
+    </label>
+  </div>
   <div class="actions">
     <button type="submit">Add</button>
   </div>
