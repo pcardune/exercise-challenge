@@ -44,15 +44,15 @@ def get_access_token(code, redirect_url, callback):
 
 @cache.key
 def get_user_cachekey(fbid, viewer):
-    return "user:%s:%s" % (fbid, viewer.fbid)
+    return "user:%s:%s" % (fbid, viewer.fbid if viewer else '')
 
 @cache.key
 def get_user_friends_cachekey(fbid, viewer):
-    return "friends:%s:%s" % (fbid, viewer.fbid)
+    return "friends:%s:%s" % (fbid, viewer.fbid if viewer else '')
 
 @cache.key
 def dbget_user_friends_on_here_cachekey(fbid, viewer):
-    return "friends-local:%s:%s" % (fbid, viewer.fbid)
+    return "friends-local:%s:%s" % (fbid, viewer.fbid if viewer else '')
 
 def _cache_get(key, callback, getter_func, args=(), timeout=24*60*60):
     result = cache.get(key)
